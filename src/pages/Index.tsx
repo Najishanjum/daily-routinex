@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { TaskForm } from '@/components/TaskForm';
@@ -10,6 +9,8 @@ import { ActivitySummary } from '@/components/ActivitySummary';
 import { FloatingAddButton } from '@/components/FloatingAddButton';
 import { VoiceTaskEntry } from '@/components/VoiceTaskEntry';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
+import { Contact } from '@/components/Contact';
+import { Footer } from '@/components/Footer';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { Task, ViewMode } from '@/types/task';
@@ -168,6 +169,12 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Contact Section */}
+      <Contact />
+
+      {/* Footer */}
+      <Footer />
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50 md:bottom-8 md:right-8">
