@@ -17,10 +17,10 @@ export function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Daily Routine
+                RoutineX
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                Track your daily activities
+                Your personal productivity tracker
               </p>
             </div>
           </div>
