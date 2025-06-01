@@ -6,11 +6,14 @@ import { TaskList } from '@/components/TaskList';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SearchFilter } from '@/components/SearchFilter';
 import { DailyStats } from '@/components/DailyStats';
+import { ActivitySummary } from '@/components/ActivitySummary';
 import { FloatingAddButton } from '@/components/FloatingAddButton';
+import { VoiceTaskEntry } from '@/components/VoiceTaskEntry';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { Task, ViewMode } from '@/types/task';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -21,6 +24,7 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const [showActivitySummary, setShowActivitySummary] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -56,12 +60,14 @@ const Index = () => {
           ? { ...taskData, id: editingTask.id }
           : task
       ));
+      toast.success('Task updated successfully!');
     } else {
       const newTask: Task = {
         ...taskData,
         id: Date.now().toString()
       };
       setTasks([...tasks, newTask]);
+      toast.success('Task added successfully!');
     }
     
     setIsFormOpen(false);
@@ -81,12 +87,26 @@ const Index = () => {
     if (taskToDelete) {
       setTasks(tasks.filter(task => task.id !== taskToDelete.id));
       setTaskToDelete(null);
+      toast.success('Task deleted successfully!');
     }
   };
 
   const handleAddClick = () => {
     setEditingTask(null);
     setIsFormOpen(true);
+  };
+
+  const handleVoiceTask = (transcript: string) => {
+    setEditingTask(null);
+    setIsFormOpen(true);
+    // Pre-fill the form with the voice transcript
+    setTimeout(() => {
+      const titleInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+      if (titleInput) {
+        titleInput.value = transcript;
+        titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }, 100);
   };
 
   return (
@@ -104,6 +124,19 @@ const Index = () => {
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate}
               />
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowActivitySummary(!showActivitySummary)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    showActivitySummary
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                  }`}
+                >
+                  {showActivitySummary ? 'Show Tasks' : 'Show Charts'}
+                </button>
+              </div>
             </div>
 
             <SearchFilter
@@ -113,12 +146,16 @@ const Index = () => {
               onCategoryChange={setSelectedCategory}
             />
 
-            <TaskList
-              tasks={filteredTasks}
-              onEditTask={handleEditTask}
-              onDeleteTask={handleDeleteTask}
-              viewMode={viewMode}
-            />
+            {showActivitySummary ? (
+              <ActivitySummary tasks={filteredTasks} viewMode={viewMode} />
+            ) : (
+              <TaskList
+                tasks={filteredTasks}
+                onEditTask={handleEditTask}
+                onDeleteTask={handleDeleteTask}
+                viewMode={viewMode}
+              />
+            )}
           </div>
 
           {/* Sidebar */}
@@ -132,7 +169,11 @@ const Index = () => {
         </div>
       </div>
 
-      <FloatingAddButton onClick={handleAddClick} />
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50 md:bottom-8 md:right-8">
+        <VoiceTaskEntry onVoiceTask={handleVoiceTask} />
+        <FloatingAddButton onClick={handleAddClick} />
+      </div>
 
       {isFormOpen && (
         <TaskForm

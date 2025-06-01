@@ -43,6 +43,16 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom routine tracker colors */
+    --routine-blue: 99 102 241;
+    --routine-purple: 139 92 246;
+    --routine-teal: 6 182 212;
+    --routine-pink: 236 72 153;
+    --routine-emerald: 16 185 129;
+    --routine-orange: 245 158 11;
+    --routine-red: 239 68 68;
+    --routine-gray: 107 114 128;
   }
 
   .dark {
@@ -132,31 +142,64 @@
   }
 
   .category-study {
-    @apply bg-routine-blue/20 text-routine-blue border-routine-blue/30;
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700;
   }
 
   .category-exercise {
-    @apply bg-routine-emerald/20 text-routine-emerald border-routine-emerald/30;
+    @apply bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700;
   }
 
   .category-work {
-    @apply bg-routine-purple/20 text-routine-purple border-routine-purple/30;
+    @apply bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-700;
   }
 
   .category-personal {
-    @apply bg-routine-pink/20 text-routine-pink border-routine-pink/30;
+    @apply bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border-pink-300 dark:border-pink-700;
   }
 
   .category-health {
-    @apply bg-routine-teal/20 text-routine-teal border-routine-teal/30;
+    @apply bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border-teal-300 dark:border-teal-700;
   }
 
   .category-hobby {
-    @apply bg-routine-orange/20 text-routine-orange border-routine-orange/30;
+    @apply bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-700;
   }
 
   .category-other {
-    @apply bg-routine-gray/20 text-routine-gray border-routine-gray/30;
+    @apply bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700;
+  }
+
+  /* Custom progress bar colors */
+  .progress-bar {
+    transition: all 0.3s ease;
+  }
+
+  .progress-bar[data-category="study"] .progress-indicator {
+    background: rgb(var(--routine-blue));
+  }
+
+  .progress-bar[data-category="exercise"] .progress-indicator {
+    background: rgb(var(--routine-emerald));
+  }
+
+  .progress-bar[data-category="work"] .progress-indicator {
+    background: rgb(var(--routine-purple));
+  }
+
+  .progress-bar[data-category="personal"] .progress-indicator {
+    background: rgb(var(--routine-pink));
+  }
+
+  .progress-bar[data-category="health"] .progress-indicator {
+    background: rgb(var(--routine-teal));
+  }
+
+  .progress-bar[data-category="hobby"] .progress-indicator {
+    background: rgb(var(--routine-orange));
+  }
+
+  .progress-bar[data-category="other"] .progress-indicator {
+    background: rgb(var(--routine-gray));
   }
 }
 
@@ -180,4 +223,20 @@
 .modal-backdrop {
   backdrop-filter: blur(8px);
   background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Custom progress component styling */
+[data-progress-root] {
+  position: relative;
+  overflow: hidden;
+  background: rgb(var(--secondary));
+  border-radius: var(--radius);
+}
+
+[data-progress-indicator] {
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  background: var(--progress-foreground, rgb(var(--primary)));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

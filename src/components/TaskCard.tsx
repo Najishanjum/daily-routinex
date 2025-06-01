@@ -1,6 +1,7 @@
 
 import { Clock, Calendar } from 'lucide-react';
 import { Task, CATEGORIES } from '@/types/task';
+import { Badge } from '@/components/ui/badge';
 
 interface TaskCardProps {
   task: Task;
@@ -29,9 +30,13 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
               {task.title}
             </h3>
             {category && (
-              <span className={`px-2 py-1 rounded-lg text-xs font-medium border category-${category.id}`}>
+              <Badge 
+                variant="outline" 
+                className={`category-${category.id} flex items-center gap-1 font-medium`}
+              >
+                <span className="text-sm">{category.icon}</span>
                 {category.label}
-              </span>
+              </Badge>
             )}
           </div>
           

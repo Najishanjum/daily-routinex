@@ -12,11 +12,11 @@ export interface Task {
 export type ViewMode = 'daily' | 'weekly' | 'monthly';
 
 export const CATEGORIES = [
-  { id: 'study', label: 'Study', color: 'blue' },
-  { id: 'exercise', label: 'Exercise', color: 'emerald' },
-  { id: 'work', label: 'Work', color: 'purple' },
-  { id: 'personal', label: 'Personal', color: 'pink' },
-  { id: 'health', label: 'Health', color: 'teal' },
-  { id: 'hobby', label: 'Hobby', color: 'orange' },
-  { id: 'other', label: 'Other', color: 'gray' },
+  { id: 'study', label: 'Study', color: 'blue', icon: '🧠' },
+  { id: 'exercise', label: 'Exercise', color: 'emerald', icon: '🏋️' },
+  { id: 'work', label: 'Work', color: 'purple', icon: '💼' },
+  { id: 'personal', label: 'Personal', color: 'pink', icon: '👤' },
+  { id: 'health', label: 'Health', color: 'teal', icon: '🏥' },
+  { id: 'hobby', label: 'Hobby', color: 'orange', icon: '🎨' },
+  { id: 'other', label: 'Other', color: 'gray', icon: '📋' },
 ] as const;
