@@ -1,5 +1,5 @@
 
-import { Clock, Calendar, Calendar } from 'lucide-react';
+import { Clock, Calendar } from 'lucide-react';
 import { Task, CATEGORIES } from '@/types/task';
 
 interface TaskCardProps {
