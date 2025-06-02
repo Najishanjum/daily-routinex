@@ -19,6 +19,10 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { Task, ViewMode } from '@/types/task';
 import { toast } from 'sonner';
+import { RoutineHistory } from '@/components/RoutineHistory';
+import { StreakRewards } from '@/components/StreakRewards';
+import { NotificationSettings } from '@/components/NotificationSettings';
+import { CookieConsent } from '@/components/CookieConsent';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -33,6 +37,8 @@ const Index = () => {
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showRoutineHistory, setShowRoutineHistory] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -146,7 +152,27 @@ const Index = () => {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowRoutineHistory(!showRoutineHistory)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showRoutineHistory
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                {showRoutineHistory ? 'Hide History' : 'View History'}
+              </button>
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showNotifications
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                Notifications
+              </button>
               <button
                 onClick={() => setShowUserProfile(!showUserProfile)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -206,12 +232,13 @@ const Index = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <DailyStats 
               tasks={filteredTasks}
               viewMode={viewMode}
               selectedDate={selectedDate}
             />
+            <StreakRewards tasks={tasks} />
           </div>
         </div>
       </div>
@@ -261,6 +288,19 @@ const Index = () => {
         isOpen={showPrivacy}
         onClose={() => setShowPrivacy(false)}
       />
+
+      <RoutineHistory
+        tasks={tasks}
+        isOpen={showRoutineHistory}
+        onClose={() => setShowRoutineHistory(false)}
+      />
+
+      <NotificationSettings
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
+
+      <CookieConsent />
     </div>
   );
 };
