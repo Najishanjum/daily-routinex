@@ -7,6 +7,7 @@ export interface Task {
   category: string;
   notes?: string;
   createdAt?: string;
+  completed: boolean; // Added the missing completed property
 }
 
 export type ViewMode = 'daily' | 'weekly' | 'monthly';
