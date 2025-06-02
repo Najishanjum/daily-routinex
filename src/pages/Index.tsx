@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { TaskForm } from '@/components/TaskForm';
@@ -11,6 +12,7 @@ import { VoiceTaskEntry } from '@/components/VoiceTaskEntry';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 import { Contact } from '@/components/Contact';
 import { Footer } from '@/components/Footer';
+import { UserProfile } from '@/components/UserProfile';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { Task, ViewMode } from '@/types/task';
@@ -26,6 +28,7 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [showActivitySummary, setShowActivitySummary] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -118,6 +121,25 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Profile Toggle */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowUserProfile(!showUserProfile)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showUserProfile
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                {showUserProfile ? 'Hide Profile' : 'Show Profile'}
+              </button>
+            </div>
+
+            {/* User Profile Section */}
+            {showUserProfile && (
+              <UserProfile tasks={tasks} />
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <ViewToggle 
                 viewMode={viewMode} 
