@@ -33,7 +33,8 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
     e.preventDefault();
     onSave({
       ...formData,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      completed: false
     });
   };
 
