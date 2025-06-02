@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { TaskForm } from '@/components/TaskForm';
@@ -13,6 +12,9 @@ import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 import { Contact } from '@/components/Contact';
 import { Footer } from '@/components/Footer';
 import { UserProfile } from '@/components/UserProfile';
+import { TermsConditions } from '@/components/TermsConditions';
+import { PrivacyPolicy } from '@/components/PrivacyPolicy';
+import { TextToSpeechAssistant } from '@/components/TextToSpeechAssistant';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { Task, ViewMode } from '@/types/task';
@@ -29,6 +31,8 @@ const Index = () => {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [showActivitySummary, setShowActivitySummary] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -65,6 +69,11 @@ const Index = () => {
           : task
       ));
       toast.success('Task updated successfully!');
+      
+      // Use TTS to announce task update
+      if ((window as any).routineXSpeak) {
+        (window as any).routineXSpeak(`Task "${taskData.title}" has been updated successfully`);
+      }
     } else {
       const newTask: Task = {
         ...taskData,
@@ -72,6 +81,11 @@ const Index = () => {
       };
       setTasks([...tasks, newTask]);
       toast.success('Task added successfully!');
+      
+      // Use TTS to announce new task
+      if ((window as any).routineXSpeak) {
+        (window as any).routineXSpeak(`New task "${taskData.title}" has been added to your routine`);
+      }
     }
     
     setIsFormOpen(false);
@@ -92,6 +106,11 @@ const Index = () => {
       setTasks(tasks.filter(task => task.id !== taskToDelete.id));
       setTaskToDelete(null);
       toast.success('Task deleted successfully!');
+      
+      // Use TTS to announce task deletion
+      if ((window as any).routineXSpeak) {
+        (window as any).routineXSpeak(`Task "${taskToDelete.title}" has been deleted`);
+      }
     }
   };
 
@@ -111,6 +130,11 @@ const Index = () => {
         titleInput.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }, 100);
+    
+    // Use TTS to confirm voice input
+    if ((window as any).routineXSpeak) {
+      (window as any).routineXSpeak(`Voice input received: ${transcript}. Please complete the task details.`);
+    }
   };
 
   return (
@@ -196,7 +220,13 @@ const Index = () => {
       <Contact />
 
       {/* Footer */}
-      <Footer />
+      <Footer 
+        onTermsClick={() => setShowTerms(true)}
+        onPrivacyClick={() => setShowPrivacy(true)}
+      />
+
+      {/* Text-to-Speech Assistant */}
+      <TextToSpeechAssistant />
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50 md:bottom-8 md:right-8">
@@ -220,6 +250,16 @@ const Index = () => {
         taskTitle={taskToDelete?.title || ''}
         onConfirm={confirmDelete}
         onCancel={() => setTaskToDelete(null)}
+      />
+
+      <TermsConditions
+        isOpen={showTerms}
+        onClose={() => setShowTerms(false)}
+      />
+
+      <PrivacyPolicy
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
       />
     </div>
   );

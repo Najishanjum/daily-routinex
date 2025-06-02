@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -200,6 +199,47 @@
 
   .progress-bar[data-category="other"] .progress-indicator {
     background: rgb(var(--routine-gray));
+  }
+
+  /* Animation for slide up effect */
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Voice assistant animations */
+  .voice-pulse {
+    animation: voicePulse 1.5s infinite;
+  }
+
+  @keyframes voicePulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  /* Legal component styling */
+  .legal-section {
+    transition: all 0.3s ease;
+  }
+
+  .legal-section:hover {
+    transform: translateX(4px);
   }
 }
 
