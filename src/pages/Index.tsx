@@ -23,6 +23,8 @@ import { RoutineHistory } from '@/components/RoutineHistory';
 import { StreakRewards } from '@/components/StreakRewards';
 import { NotificationSettings } from '@/components/NotificationSettings';
 import { CookieConsent } from '@/components/CookieConsent';
+import { FriendMode } from '@/components/FriendMode';
+import { WellnessReminders } from '@/components/WellnessReminders';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -39,6 +41,8 @@ const Index = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showRoutineHistory, setShowRoutineHistory] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showFriendMode, setShowFriendMode] = useState(false);
+  const [showWellnessReminders, setShowWellnessReminders] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -153,6 +157,26 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowFriendMode(!showFriendMode)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showFriendMode
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                Friend Mode
+              </button>
+              <button
+                onClick={() => setShowWellnessReminders(!showWellnessReminders)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showWellnessReminders
+                    ? 'bg-green-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                Wellness
+              </button>
               <button
                 onClick={() => setShowRoutineHistory(!showRoutineHistory)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -298,6 +322,17 @@ const Index = () => {
       <NotificationSettings
         isOpen={showNotifications}
         onClose={() => setShowNotifications(false)}
+      />
+
+      <FriendMode
+        tasks={tasks}
+        isOpen={showFriendMode}
+        onClose={() => setShowFriendMode(false)}
+      />
+
+      <WellnessReminders
+        isOpen={showWellnessReminders}
+        onClose={() => setShowWellnessReminders(false)}
       />
 
       <CookieConsent />
