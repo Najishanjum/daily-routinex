@@ -25,6 +25,8 @@ import { NotificationSettings } from '@/components/NotificationSettings';
 import { CookieConsent } from '@/components/CookieConsent';
 import { FriendMode } from '@/components/FriendMode';
 import { WellnessReminders } from '@/components/WellnessReminders';
+import { FocusMusic } from '@/components/FocusMusic';
+import { FloatingMusicControl } from '@/components/FloatingMusicControl';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -43,6 +45,9 @@ const Index = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showFriendMode, setShowFriendMode] = useState(false);
   const [showWellnessReminders, setShowWellnessReminders] = useState(false);
+  const [showFocusMusic, setShowFocusMusic] = useState(false);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const [currentMusicTrack, setCurrentMusicTrack] = useState<string | null>(null);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -147,6 +152,10 @@ const Index = () => {
     }
   };
 
+  const handleMusicToggle = () => {
+    setMusicPlaying(!musicPlaying);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
       <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
@@ -157,6 +166,16 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowFocusMusic(!showFocusMusic)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showFocusMusic
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🎵 Focus Music
+              </button>
               <button
                 onClick={() => setShowFriendMode(!showFriendMode)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -285,6 +304,14 @@ const Index = () => {
         <FloatingAddButton onClick={handleAddClick} />
       </div>
 
+      {/* Floating Music Control */}
+      <FloatingMusicControl
+        isPlaying={musicPlaying}
+        currentTrack={currentMusicTrack}
+        onTogglePlay={handleMusicToggle}
+        onOpenMusic={() => setShowFocusMusic(true)}
+      />
+
       {isFormOpen && (
         <TaskForm
           task={editingTask}
@@ -333,6 +360,11 @@ const Index = () => {
       <WellnessReminders
         isOpen={showWellnessReminders}
         onClose={() => setShowWellnessReminders(false)}
+      />
+
+      <FocusMusic
+        isOpen={showFocusMusic}
+        onClose={() => setShowFocusMusic(false)}
       />
 
       <CookieConsent />
