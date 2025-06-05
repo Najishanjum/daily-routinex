@@ -27,6 +27,7 @@ import { FriendMode } from '@/components/FriendMode';
 import { WellnessReminders } from '@/components/WellnessReminders';
 import { FocusMusic } from '@/components/FocusMusic';
 import { FloatingMusicControl } from '@/components/FloatingMusicControl';
+import { AIChatCompanion } from '@/components/AIChatCompanion';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -85,7 +86,6 @@ const Index = () => {
       ));
       toast.success('Task updated successfully!');
       
-      // Use TTS to announce task update
       if ((window as any).routineXSpeak) {
         (window as any).routineXSpeak(`Task "${taskData.title}" has been updated successfully`);
       }
@@ -97,7 +97,6 @@ const Index = () => {
       setTasks([...tasks, newTask]);
       toast.success('Task added successfully!');
       
-      // Use TTS to announce new task
       if ((window as any).routineXSpeak) {
         (window as any).routineXSpeak(`New task "${taskData.title}" has been added to your routine`);
       }
@@ -122,7 +121,6 @@ const Index = () => {
       setTaskToDelete(null);
       toast.success('Task deleted successfully!');
       
-      // Use TTS to announce task deletion
       if ((window as any).routineXSpeak) {
         (window as any).routineXSpeak(`Task "${taskToDelete.title}" has been deleted`);
       }
@@ -137,7 +135,6 @@ const Index = () => {
   const handleVoiceTask = (transcript: string) => {
     setEditingTask(null);
     setIsFormOpen(true);
-    // Pre-fill the form with the voice transcript
     setTimeout(() => {
       const titleInput = document.querySelector('input[type="text"]') as HTMLInputElement;
       if (titleInput) {
@@ -146,7 +143,6 @@ const Index = () => {
       }
     }, 100);
     
-    // Use TTS to confirm voice input
     if ((window as any).routineXSpeak) {
       (window as any).routineXSpeak(`Voice input received: ${transcript}. Please complete the task details.`);
     }
@@ -299,7 +295,7 @@ const Index = () => {
       <TextToSpeechAssistant />
 
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50 md:bottom-8 md:right-8">
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40 md:bottom-8 md:right-8">
         <VoiceTaskEntry onVoiceTask={handleVoiceTask} />
         <FloatingAddButton onClick={handleAddClick} />
       </div>
@@ -311,6 +307,9 @@ const Index = () => {
         onTogglePlay={handleMusicToggle}
         onOpenMusic={() => setShowFocusMusic(true)}
       />
+
+      {/* AI Chat Companion */}
+      <AIChatCompanion tasks={tasks} />
 
       {isFormOpen && (
         <TaskForm
