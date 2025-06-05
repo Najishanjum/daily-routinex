@@ -27,7 +27,6 @@ import { FriendMode } from '@/components/FriendMode';
 import { WellnessReminders } from '@/components/WellnessReminders';
 import { FocusMusic } from '@/components/FocusMusic';
 import { FloatingMusicControl } from '@/components/FloatingMusicControl';
-import { AIChatCompanion } from '@/components/AIChatCompanion';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -307,9 +306,6 @@ const Index = () => {
         onTogglePlay={handleMusicToggle}
         onOpenMusic={() => setShowFocusMusic(true)}
       />
-
-      {/* AI Chat Companion */}
-      <AIChatCompanion tasks={tasks} />
 
       {isFormOpen && (
         <TaskForm
