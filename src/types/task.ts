@@ -8,6 +8,7 @@ export interface Task {
   notes?: string;
   createdAt?: string;
   completed: boolean; // Added the missing completed property
+  startTime?: string; // Added startTime property for routine history
 }
 
 export type ViewMode = 'daily' | 'weekly' | 'monthly';
