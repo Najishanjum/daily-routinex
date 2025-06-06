@@ -27,6 +27,7 @@ import { FriendMode } from '@/components/FriendMode';
 import { WellnessReminders } from '@/components/WellnessReminders';
 import { FocusMusic } from '@/components/FocusMusic';
 import { FloatingMusicControl } from '@/components/FloatingMusicControl';
+import { AIGoalPlanner } from '@/components/AIGoalPlanner';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -46,6 +47,7 @@ const Index = () => {
   const [showFriendMode, setShowFriendMode] = useState(false);
   const [showWellnessReminders, setShowWellnessReminders] = useState(false);
   const [showFocusMusic, setShowFocusMusic] = useState(false);
+  const [showGoalPlanner, setShowGoalPlanner] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [currentMusicTrack, setCurrentMusicTrack] = useState<string | null>(null);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -151,6 +153,15 @@ const Index = () => {
     setMusicPlaying(!musicPlaying);
   };
 
+  const handleGoalTasksGenerated = (generatedTasks: Omit<Task, 'id'>[]) => {
+    const newTasks = generatedTasks.map(task => ({
+      ...task,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9)
+    }));
+    setTasks([...tasks, ...newTasks]);
+    toast.success(`${generatedTasks.length} tasks added to your routine!`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
       <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
@@ -161,6 +172,16 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowGoalPlanner(!showGoalPlanner)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showGoalPlanner
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🎯 AI Goals
+              </button>
               <button
                 onClick={() => setShowFocusMusic(!showFocusMusic)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -360,6 +381,12 @@ const Index = () => {
       <FocusMusic
         isOpen={showFocusMusic}
         onClose={() => setShowFocusMusic(false)}
+      />
+
+      <AIGoalPlanner
+        isOpen={showGoalPlanner}
+        onClose={() => setShowGoalPlanner(false)}
+        onTasksGenerated={handleGoalTasksGenerated}
       />
 
       <CookieConsent />
