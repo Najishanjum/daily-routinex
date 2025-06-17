@@ -29,6 +29,7 @@ import { FocusMusic } from '@/components/FocusMusic';
 import { FloatingMusicControl } from '@/components/FloatingMusicControl';
 import { AIGoalPlanner } from '@/components/AIGoalPlanner';
 import { PhotoTimeline } from '@/components/PhotoTimeline';
+import { PrintMyDay } from '@/components/PrintMyDay';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -53,6 +54,7 @@ const Index = () => {
   const [currentMusicTrack, setCurrentMusicTrack] = useState<string | null>(null);
   const [showPhotoTimeline, setShowPhotoTimeline] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const [showPrintMyDay, setShowPrintMyDay] = useState(false);
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -174,6 +176,16 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowPrintMyDay(!showPrintMyDay)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showPrintMyDay
+                    ? 'bg-green-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🖨️ Print My Day
+              </button>
               <button
                 onClick={() => setShowPhotoTimeline(!showPhotoTimeline)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -405,6 +417,13 @@ const Index = () => {
         tasks={tasks}
         isOpen={showPhotoTimeline}
         onClose={() => setShowPhotoTimeline(false)}
+      />
+
+      <PrintMyDay
+        tasks={tasks}
+        selectedDate={selectedDate}
+        isOpen={showPrintMyDay}
+        onClose={() => setShowPrintMyDay(false)}
       />
 
       <CookieConsent />
