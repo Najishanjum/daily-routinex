@@ -9,6 +9,7 @@ export interface Task {
   createdAt?: string;
   completed: boolean; // Added the missing completed property
   startTime?: string; // Added startTime property for routine history
+  photos?: string[]; // Added photos array for photo diary
 }
 
 export type ViewMode = 'daily' | 'weekly' | 'monthly';

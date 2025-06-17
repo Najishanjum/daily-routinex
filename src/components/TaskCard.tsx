@@ -1,5 +1,5 @@
 
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, Calendar, Camera } from 'lucide-react';
 import { Task, CATEGORIES } from '@/types/task';
 import { Badge } from '@/components/ui/badge';
 
@@ -38,6 +38,12 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                 {category.label}
               </Badge>
             )}
+            {task.photos && task.photos.length > 0 && (
+              <Badge variant="outline" className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+                <Camera className="w-3 h-3" />
+                {task.photos.length}
+              </Badge>
+            )}
           </div>
           
           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -55,6 +61,32 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
             <p className="text-gray-700 dark:text-gray-300 mt-3 text-sm leading-relaxed">
               {task.notes}
             </p>
+          )}
+
+          {task.photos && task.photos.length > 0 && (
+            <div className="mt-3 flex gap-2 overflow-x-auto">
+              {task.photos.slice(0, 3).map((photo, index) => (
+                <img
+                  key={index}
+                  src={photo}
+                  alt={`${task.title} photo ${index + 1}`}
+                  className="w-16 h-16 object-cover rounded-lg flex-shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                  onClick={() => {
+                    const img = new Image();
+                    img.src = photo;
+                    const newWindow = window.open('', '_blank');
+                    if (newWindow) {
+                      newWindow.document.write(`<img src="${photo}" style="max-width:100%;max-height:100%;object-fit:contain;" />`);
+                    }
+                  }}
+                />
+              ))}
+              {task.photos.length > 3 && (
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 flex-shrink-0">
+                  +{task.photos.length - 3}
+                </div>
+              )}
+            </div>
           )}
         </div>
 

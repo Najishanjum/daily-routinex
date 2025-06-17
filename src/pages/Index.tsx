@@ -28,6 +28,7 @@ import { WellnessReminders } from '@/components/WellnessReminders';
 import { FocusMusic } from '@/components/FocusMusic';
 import { FloatingMusicControl } from '@/components/FloatingMusicControl';
 import { AIGoalPlanner } from '@/components/AIGoalPlanner';
+import { PhotoTimeline } from '@/components/PhotoTimeline';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -50,6 +51,7 @@ const Index = () => {
   const [showGoalPlanner, setShowGoalPlanner] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [currentMusicTrack, setCurrentMusicTrack] = useState<string | null>(null);
+  const [showPhotoTimeline, setShowPhotoTimeline] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const filteredTasks = tasks.filter(task => {
@@ -172,6 +174,16 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowPhotoTimeline(!showPhotoTimeline)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showPhotoTimeline
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                📸 Photo Timeline
+              </button>
               <button
                 onClick={() => setShowGoalPlanner(!showGoalPlanner)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -387,6 +399,12 @@ const Index = () => {
         isOpen={showGoalPlanner}
         onClose={() => setShowGoalPlanner(false)}
         onTasksGenerated={handleGoalTasksGenerated}
+      />
+
+      <PhotoTimeline
+        tasks={tasks}
+        isOpen={showPhotoTimeline}
+        onClose={() => setShowPhotoTimeline(false)}
       />
 
       <CookieConsent />

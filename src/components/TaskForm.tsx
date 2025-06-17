@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Task, CATEGORIES } from '@/types/task';
+import { PhotoUpload } from './PhotoUpload';
 
 interface TaskFormProps {
   task?: Task | null;
@@ -14,7 +15,8 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
     duration: 30,
     date: new Date().toISOString().split('T')[0],
     category: 'work',
-    notes: ''
+    notes: '',
+    photos: [] as string[]
   });
 
   useEffect(() => {
@@ -24,7 +26,8 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
         duration: task.duration,
         date: task.date,
         category: task.category,
-        notes: task.notes || ''
+        notes: task.notes || '',
+        photos: task.photos || []
       });
     }
   }, [task]);
@@ -49,7 +52,7 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
 
   return (
     <div className="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4">
-      <div className="glass-card rounded-2xl p-6 w-full max-w-md animate-slide-up">
+      <div className="glass-card rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-slide-up">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
           {task ? 'Edit Task' : 'Add New Task'}
         </h2>
@@ -130,6 +133,11 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
               placeholder="Add any additional notes..."
             />
           </div>
+
+          <PhotoUpload
+            photos={formData.photos}
+            onPhotosChange={(photos) => setFormData({ ...formData, photos })}
+          />
 
           <div className="flex gap-3 pt-4">
             <button
