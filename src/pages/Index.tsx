@@ -31,6 +31,7 @@ import { AIGoalPlanner } from '@/components/AIGoalPlanner';
 import { PhotoTimeline } from '@/components/PhotoTimeline';
 import { PrintMyDay } from '@/components/PrintMyDay';
 import { ProgressCertificate } from '@/components/ProgressCertificate';
+import { MiniCourses } from '@/components/MiniCourses';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -57,6 +58,7 @@ const Index = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showPrintMyDay, setShowPrintMyDay] = useState(false);
   const [showProgressCertificate, setShowProgressCertificate] = useState(false);
+  const [showMiniCourses, setShowMiniCourses] = useState(false);
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -178,6 +180,16 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowMiniCourses(!showMiniCourses)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showMiniCourses
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🎓 Mini Courses
+              </button>
               <button
                 onClick={() => setShowProgressCertificate(!showProgressCertificate)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -432,6 +444,12 @@ const Index = () => {
         tasks={tasks}
         isOpen={showProgressCertificate}
         onClose={() => setShowProgressCertificate(false)}
+      />
+
+      <MiniCourses
+        isOpen={showMiniCourses}
+        onClose={() => setShowMiniCourses(false)}
+        onTasksGenerated={handleGoalTasksGenerated}
       />
 
       <CookieConsent />
