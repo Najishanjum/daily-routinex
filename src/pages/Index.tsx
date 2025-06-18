@@ -30,6 +30,7 @@ import { FloatingMusicControl } from '@/components/FloatingMusicControl';
 import { AIGoalPlanner } from '@/components/AIGoalPlanner';
 import { PhotoTimeline } from '@/components/PhotoTimeline';
 import { PrintMyDay } from '@/components/PrintMyDay';
+import { ProgressCertificate } from '@/components/ProgressCertificate';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -55,6 +56,7 @@ const Index = () => {
   const [showPhotoTimeline, setShowPhotoTimeline] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showPrintMyDay, setShowPrintMyDay] = useState(false);
+  const [showProgressCertificate, setShowProgressCertificate] = useState(false);
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -177,6 +179,16 @@ const Index = () => {
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
               <button
+                onClick={() => setShowProgressCertificate(!showProgressCertificate)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showProgressCertificate
+                    ? 'bg-yellow-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🏆 Certificate
+              </button>
+              <button
                 onClick={() => setShowPrintMyDay(!showPrintMyDay)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   showPrintMyDay
@@ -185,16 +197,6 @@ const Index = () => {
                 }`}
               >
                 🖨️ Print My Day
-              </button>
-              <button
-                onClick={() => setShowPhotoTimeline(!showPhotoTimeline)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  showPhotoTimeline
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
-                }`}
-              >
-                📸 Photo Timeline
               </button>
               <button
                 onClick={() => setShowGoalPlanner(!showGoalPlanner)}
@@ -424,6 +426,12 @@ const Index = () => {
         selectedDate={selectedDate}
         isOpen={showPrintMyDay}
         onClose={() => setShowPrintMyDay(false)}
+      />
+
+      <ProgressCertificate
+        tasks={tasks}
+        isOpen={showProgressCertificate}
+        onClose={() => setShowProgressCertificate(false)}
       />
 
       <CookieConsent />
