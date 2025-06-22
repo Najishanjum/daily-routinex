@@ -25,7 +25,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get user's memory/context
+    // Get user's memory/context from database
     let userMemory = {};
     if (userId) {
       const { data: memoryData } = await supabase
@@ -39,28 +39,60 @@ serve(async (req) => {
       }
     }
 
-    // Create personalized system prompt
-    const systemPrompt = `You are RoutineX AI Coach, a supportive productivity and wellness companion. 
+    // Get recent conversation history for context
+    let conversationHistory = [];
+    if (userId) {
+      const { data: historyData } = await supabase
+        .from('ai_conversations')
+        .select('message, response')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      
+      if (historyData) {
+        conversationHistory = historyData;
+      }
+    }
+
+    // Enhanced system prompt with memory capabilities
+    const systemPrompt = `You are RoutineX AI Coach with Private Memory - an advanced AI companion that remembers user preferences, patterns, and provides increasingly personalized advice.
 
 User Context: ${JSON.stringify(userContext)}
-User Memory: ${JSON.stringify(userMemory)}
+User Memory Profile: ${JSON.stringify(userMemory)}
+Recent Conversation History: ${JSON.stringify(conversationHistory)}
 
-Guidelines:
-- Be encouraging, empathetic, and practical
-- Give personalized advice based on user's patterns and preferences
-- Suggest specific, actionable steps
-- Remember user's goals, challenges, and progress
-- Adapt your tone to match the user's communication style
-- Focus on building sustainable habits and routines
-- Offer motivation during difficult times
+MEMORY CAPABILITIES:
+- Remember user's communication style, mood patterns, and preferences
+- Track user's goals, challenges, and motivation triggers
+- Provide continuity across conversations
+- Adapt your personality and advice based on learned patterns
+
+GUIDELINES:
+- Be empathetic, supportive, and increasingly personalized
+- Reference previous conversations when relevant
+- Adapt your tone to match user's preferred communication style
+- Remember user's goals and track their progress over time
+- Suggest specific, actionable steps based on their patterns
+- Celebrate their achievements and acknowledge struggles
+- Use insights from their task completion patterns and preferences
+
+PERSONALIZATION FEATURES:
+1. Mood-aware responses (adapt to their current emotional state)
+2. Pattern recognition (identify what works for them)
+3. Preference learning (remember their likes/dislikes)
+4. Goal continuity (track long-term objectives)
+5. Motivation triggers (use what energizes them)
 
 Always provide:
-1. Empathetic acknowledgment
-2. Practical actionable advice
-3. Specific next steps
-4. Encouragement for progress`;
+1. Empathetic acknowledgment with personal touch
+2. Practical actionable advice based on their patterns
+3. Specific next steps tailored to their preferences
+4. Encouragement that references their progress
+5. Memory-based insights when relevant
 
-    console.log('Sending request to OpenAI...');
+If this is a returning user, acknowledge their history and build on previous conversations. If new, focus on learning about them.`;
+
+    console.log('Sending enhanced request to OpenAI with memory context...');
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -75,7 +107,7 @@ Always provide:
           { role: 'user', content: message }
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 600,
       }),
     });
 
@@ -86,29 +118,34 @@ Always provide:
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    // Update user memory if userId provided
+    // Enhanced memory update
     if (userId) {
-      const updatedMemory = {
+      const enhancedMemory = {
         ...userMemory,
         lastInteraction: new Date().toISOString(),
         recentTopics: [
           ...(userMemory.recentTopics || []).slice(-4),
           message.substring(0, 100)
         ],
-        tone: userMemory.tone || 'supportive',
-        preferences: userMemory.preferences || {}
+        conversationCount: (userMemory.conversationCount || 0) + 1,
+        responsePatterns: {
+          avgResponseLength: aiResponse.length,
+          topics: extractTopicsFromMessage(message),
+          sentiment: analyzeSentiment(message)
+        },
+        learningInsights: generateLearningInsights(userContext, userMemory)
       };
 
       await supabase
         .from('user_ai_memory')
         .upsert({
           user_id: userId,
-          memory_data: updatedMemory,
+          memory_data: enhancedMemory,
           updated_at: new Date().toISOString()
         });
     }
 
-    // Store conversation
+    // Store detailed conversation with context
     if (userId) {
       await supabase
         .from('ai_conversations')
@@ -116,12 +153,22 @@ Always provide:
           user_id: userId,
           message: message,
           response: aiResponse,
+          context_data: {
+            userContext,
+            memorySnapshot: userMemory,
+            timestamp: new Date().toISOString()
+          },
           created_at: new Date().toISOString()
         });
     }
 
+    // Generate personality insight for the response
+    const personalityInsight = generatePersonalityInsight(userMemory, userContext);
+
     return new Response(JSON.stringify({ 
       response: aiResponse,
+      personalityInsight: personalityInsight,
+      memoryUpdated: true,
       success: true 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -138,3 +185,72 @@ Always provide:
     });
   }
 });
+
+// Helper functions for enhanced memory processing
+function extractTopicsFromMessage(message: string): string[] {
+  const topics = [];
+  const keywords = ['morning', 'routine', 'habit', 'goal', 'work', 'exercise', 'sleep', 'productivity', 'motivation', 'stress', 'focus'];
+  const lowerMessage = message.toLowerCase();
+  
+  keywords.forEach(keyword => {
+    if (lowerMessage.includes(keyword)) topics.push(keyword);
+  });
+  
+  return topics;
+}
+
+function analyzeSentiment(message: string): string {
+  const positive = ['happy', 'excited', 'motivated', 'great', 'awesome', 'good', 'amazing', 'fantastic'];
+  const negative = ['sad', 'frustrated', 'tired', 'overwhelmed', 'stressed', 'bad', 'difficult', 'struggling'];
+  
+  const lowerMessage = message.toLowerCase();
+  
+  const positiveCount = positive.filter(word => lowerMessage.includes(word)).length;
+  const negativeCount = negative.filter(word => lowerMessage.includes(word)).length;
+  
+  if (positiveCount > negativeCount) return 'positive';
+  if (negativeCount > positiveCount) return 'negative';
+  return 'neutral';
+}
+
+function generateLearningInsights(userContext: any, userMemory: any): any {
+  return {
+    taskPatterns: {
+      completionTrend: userContext.completionRate,
+      preferredCategory: userContext.mostUsedCategory,
+      consistencyScore: calculateConsistencyScore(userContext)
+    },
+    communicationStyle: {
+      preferredLength: userMemory.conversationCount > 5 ? 'detailed' : 'concise',
+      responsiveness: userMemory.lastInteraction ? 'active' : 'new'
+    },
+    motivationProfile: {
+      triggers: userMemory.motivationTriggers || [],
+      effectiveness: userContext.completionRate > 70 ? 'high' : 'moderate'
+    }
+  };
+}
+
+function calculateConsistencyScore(userContext: any): number {
+  // Simple consistency calculation based on completion rate and task frequency
+  const baseScore = userContext.completionRate || 0;
+  const taskFrequency = userContext.totalTasks > 10 ? 20 : userContext.totalTasks * 2;
+  return Math.min(100, baseScore + taskFrequency);
+}
+
+function generatePersonalityInsight(userMemory: any, userContext: any): string {
+  if (!userMemory || !userMemory.conversationCount) {
+    return "Building your personality profile";
+  }
+  
+  const insights = [
+    "Adapting to your communication style",
+    "Learning from your patterns",
+    "Remembering your preferences",
+    "Tracking your progress",
+    "Personalizing advice based on history"
+  ];
+  
+  const insightIndex = (userMemory.conversationCount || 0) % insights.length;
+  return insights[insightIndex];
+}
