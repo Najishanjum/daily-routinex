@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Brain, Send, X, MessageCircle, Loader2 } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Message {
@@ -16,10 +16,6 @@ interface AIChatCoachProps {
   onClose: () => void;
   tasks: any[];
 }
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export function AIChatCoach({ isOpen, onClose, tasks }: AIChatCoachProps) {
   const [messages, setMessages] = useState<Message[]>([]);
