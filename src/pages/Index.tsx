@@ -34,6 +34,7 @@ import { ProgressCertificate } from '@/components/ProgressCertificate';
 import { MiniCourses } from '@/components/MiniCourses';
 import { MicroHabits } from '@/components/MicroHabits';
 import { DailySnapTracker } from '@/components/DailySnapTracker';
+import { AIChatCoach } from '@/components/AIChatCoach';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -59,6 +60,7 @@ const Index = () => {
   const [showPhotoTimeline, setShowPhotoTimeline] = useState(false);
   const [showMicroHabits, setShowMicroHabits] = useState(false);
   const [showDailySnapTracker, setShowDailySnapTracker] = useState(false);
+  const [showAIChatCoach, setShowAIChatCoach] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showPrintMyDay, setShowPrintMyDay] = useState(false);
   const [showProgressCertificate, setShowProgressCertificate] = useState(false);
@@ -184,6 +186,16 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowAIChatCoach(!showAIChatCoach)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showAIChatCoach
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🤖 AI Coach
+              </button>
               <button
                 onClick={() => setShowDailySnapTracker(!showDailySnapTracker)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -486,6 +498,12 @@ const Index = () => {
       <DailySnapTracker
         isOpen={showDailySnapTracker}
         onClose={() => setShowDailySnapTracker(false)}
+      />
+
+      <AIChatCoach
+        isOpen={showAIChatCoach}
+        onClose={() => setShowAIChatCoach(false)}
+        tasks={tasks}
       />
 
       <CookieConsent />
