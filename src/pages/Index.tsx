@@ -32,6 +32,8 @@ import { PhotoTimeline } from '@/components/PhotoTimeline';
 import { PrintMyDay } from '@/components/PrintMyDay';
 import { ProgressCertificate } from '@/components/ProgressCertificate';
 import { MiniCourses } from '@/components/MiniCourses';
+import { MicroHabits } from '@/components/MicroHabits';
+import { DailySnapTracker } from '@/components/DailySnapTracker';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -55,6 +57,8 @@ const Index = () => {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [currentMusicTrack, setCurrentMusicTrack] = useState<string | null>(null);
   const [showPhotoTimeline, setShowPhotoTimeline] = useState(false);
+  const [showMicroHabits, setShowMicroHabits] = useState(false);
+  const [showDailySnapTracker, setShowDailySnapTracker] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showPrintMyDay, setShowPrintMyDay] = useState(false);
   const [showProgressCertificate, setShowProgressCertificate] = useState(false);
@@ -180,6 +184,26 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setShowDailySnapTracker(!showDailySnapTracker)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showDailySnapTracker
+                    ? 'bg-pink-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                📸 Daily Snap
+              </button>
+              <button
+                onClick={() => setShowMicroHabits(!showMicroHabits)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showMicroHabits
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🧠 Micro-Habits
+              </button>
               <button
                 onClick={() => setShowMiniCourses(!showMiniCourses)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -450,6 +474,18 @@ const Index = () => {
         isOpen={showMiniCourses}
         onClose={() => setShowMiniCourses(false)}
         onTasksGenerated={handleGoalTasksGenerated}
+      />
+
+      <MicroHabits
+        tasks={tasks}
+        isOpen={showMicroHabits}
+        onClose={() => setShowMicroHabits(false)}
+        onTasksGenerated={handleGoalTasksGenerated}
+      />
+
+      <DailySnapTracker
+        isOpen={showDailySnapTracker}
+        onClose={() => setShowDailySnapTracker(false)}
       />
 
       <CookieConsent />
