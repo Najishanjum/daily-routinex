@@ -14,22 +14,32 @@ interface Message {
 }
 
 interface UserMemory {
-  preferences: {
-    communicationStyle: string;
-    preferredTone: string;
-    goals: string[];
-    challenges: string[];
+  preferences?: {
+    communicationStyle?: string;
+    preferredTone?: string;
+    goals?: string[];
+    challenges?: string[];
   };
-  patterns: {
-    mostActiveTime: string;
-    completionRate: number;
-    motivationTriggers: string[];
+  patterns?: {
+    mostActiveTime?: string;
+    completionRate?: number;
+    motivationTriggers?: string[];
   };
-  personalContext: {
-    mood: string;
-    recentTopics: string[];
-    lastInteraction: string;
+  personalContext?: {
+    mood?: string;
+    recentTopics?: string[];
+    lastInteraction?: string;
   };
+  conversationCount?: number;
+  recentTopics?: string[];
+  responsePatterns?: {
+    avgResponseLength?: number;
+    topics?: string[];
+    sentiment?: string;
+  };
+  learningInsights?: any;
+  motivationTriggers?: string[];
+  lastInteraction?: string;
 }
 
 interface AIChatCoachProps {
@@ -149,7 +159,7 @@ export function AIChatCoach({ isOpen, onClose, tasks }: AIChatCoachProps) {
         .from('user_ai_memory')
         .upsert({
           user_id: userId,
-          memory_data: updatedMemory,
+          memory_data: updatedMemory as any,
           updated_at: new Date().toISOString()
         });
 
@@ -365,13 +375,13 @@ export function AIChatCoach({ isOpen, onClose, tasks }: AIChatCoachProps) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
               <div>
-                <strong>Current Mood:</strong> {userMemory.personalContext.mood}
+                <strong>Current Mood:</strong> {userMemory.personalContext?.mood || 'Unknown'}
               </div>
               <div>
-                <strong>Recent Topics:</strong> {userMemory.personalContext.recentTopics.slice(-2).join(', ') || 'None yet'}
+                <strong>Recent Topics:</strong> {userMemory.personalContext?.recentTopics?.slice(-2).join(', ') || 'None yet'}
               </div>
               <div>
-                <strong>Completion Rate:</strong> {userMemory.patterns.completionRate}%
+                <strong>Completion Rate:</strong> {userMemory.patterns?.completionRate || 0}%
               </div>
             </div>
           </div>
