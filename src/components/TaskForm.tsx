@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Task, CATEGORIES, PRIORITIES } from '@/types/task';
 import { PhotoUpload } from './PhotoUpload';
@@ -17,7 +16,7 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
     category: 'work',
     notes: '',
     photos: [] as string[],
-    priority: 'not-urgent-important' as const
+    priority: 'not-urgent-important' as Task['priority']
   });
 
   useEffect(() => {
@@ -80,7 +79,7 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
             </label>
             <select
               value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value as Task['priority'] })}
               className="w-full px-4 py-3 bg-white/50 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             >
               {PRIORITIES.map((priority) => (
