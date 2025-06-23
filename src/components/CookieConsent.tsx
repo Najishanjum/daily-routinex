@@ -1,11 +1,30 @@
 
 import React, { useState, useEffect } from 'react';
-import { Cookie, X, Settings } from 'lucide-react';
+import { Cookie, X, Settings, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { toast } from 'sonner';
+
+interface CookiePreferences {
+  necessary: boolean;
+  analytics: boolean;
+  marketing: boolean;
+  preferences: boolean;
+}
+
+interface CookieConsent {
+  accepted: boolean;
+  preferences: CookiePreferences;
+  timestamp: string;
+}
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [preferences, setPreferences] = useState({
+  const [consent, setConsent] = useLocalStorage<CookieConsent | null>('cookie-consent', null);
+  const [preferences, setPreferences] = useState<CookiePreferences>({
     necessary: true,
     analytics: false,
     marketing: false,
@@ -13,54 +32,89 @@ export function CookieConsent() {
   });
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
       setShowBanner(true);
+    } else {
+      setPreferences(consent.preferences);
+      // Apply cookie preferences to actual tracking scripts
+      applyCookiePreferences(consent.preferences);
     }
-  }, []);
+  }, [consent]);
+
+  const applyCookiePreferences = (prefs: CookiePreferences) => {
+    // Apply analytics cookies
+    if (prefs.analytics) {
+      // Enable Google Analytics or other analytics
+      console.log('Analytics cookies enabled');
+      // Example: gtag('consent', 'update', { analytics_storage: 'granted' });
+    } else {
+      console.log('Analytics cookies disabled');
+      // Example: gtag('consent', 'update', { analytics_storage: 'denied' });
+    }
+
+    // Apply marketing cookies
+    if (prefs.marketing) {
+      console.log('Marketing cookies enabled');
+      // Example: gtag('consent', 'update', { ad_storage: 'granted' });
+    } else {
+      console.log('Marketing cookies disabled');
+      // Example: gtag('consent', 'update', { ad_storage: 'denied' });
+    }
+
+    // Apply preference cookies
+    if (prefs.preferences) {
+      console.log('Preference cookies enabled');
+    } else {
+      console.log('Preference cookies disabled');
+    }
+  };
+
+  const saveConsent = (newPreferences: CookiePreferences) => {
+    const consentData: CookieConsent = {
+      accepted: true,
+      preferences: newPreferences,
+      timestamp: new Date().toISOString()
+    };
+    
+    setConsent(consentData);
+    applyCookiePreferences(newPreferences);
+    setShowBanner(false);
+    setShowSettings(false);
+    
+    toast.success('Cookie preferences saved successfully!');
+  };
 
   const acceptAll = () => {
-    const allAccepted = {
+    const allAccepted: CookiePreferences = {
       necessary: true,
       analytics: true,
       marketing: true,
       preferences: true
     };
-    setPreferences(allAccepted);
-    localStorage.setItem('cookie-consent', JSON.stringify({
-      accepted: true,
-      preferences: allAccepted,
-      timestamp: new Date().toISOString()
-    }));
-    setShowBanner(false);
-    setShowSettings(false);
+    saveConsent(allAccepted);
   };
 
   const acceptSelected = () => {
-    localStorage.setItem('cookie-consent', JSON.stringify({
-      accepted: true,
-      preferences: preferences,
-      timestamp: new Date().toISOString()
-    }));
-    setShowBanner(false);
-    setShowSettings(false);
+    saveConsent(preferences);
   };
 
   const rejectAll = () => {
-    const onlyNecessary = {
+    const onlyNecessary: CookiePreferences = {
       necessary: true,
       analytics: false,
       marketing: false,
       preferences: false
     };
-    setPreferences(onlyNecessary);
-    localStorage.setItem('cookie-consent', JSON.stringify({
-      accepted: true,
-      preferences: onlyNecessary,
-      timestamp: new Date().toISOString()
+    saveConsent(onlyNecessary);
+  };
+
+  const togglePreference = (key: keyof CookiePreferences) => {
+    if (key === 'necessary') return; // Necessary cookies cannot be disabled
+    
+    setPreferences(prev => ({
+      ...prev,
+      [key]: !prev[key]
     }));
-    setShowBanner(false);
-    setShowSettings(false);
   };
 
   if (!showBanner) return null;
@@ -68,171 +122,145 @@ export function CookieConsent() {
   return (
     <>
       {/* Cookie Banner */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
-        <div className="glass-card rounded-2xl p-6 mx-auto max-w-4xl border border-white/20 dark:border-gray-700/20">
-          <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex-shrink-0">
-              <Cookie className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-            </div>
-            
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                We use cookies
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                We use cookies and similar technologies to enhance your experience, analyze usage, and improve our services. 
-                You can manage your preferences or learn more about our cookie policy.
-              </p>
-              
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={acceptAll}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  Accept All
-                </button>
-                <button
-                  onClick={rejectAll}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
-                >
-                  Reject All
-                </button>
-                <button
-                  onClick={() => setShowSettings(true)}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium flex items-center gap-2"
-                >
-                  <Settings className="w-4 h-4" />
-                  Customize
-                </button>
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto max-w-4xl">
+          <div className="glass-card rounded-2xl p-6 border border-border shadow-lg">
+            <div className="flex items-start gap-4">
+              <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex-shrink-0">
+                <Cookie className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               </div>
+              
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  🍪 We use cookies
+                </h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  We use cookies and similar technologies to enhance your experience, analyze usage, and improve our services. 
+                  You can manage your preferences or learn more about our cookie policy.
+                </p>
+                
+                <div className="flex flex-wrap gap-3">
+                  <Button onClick={acceptAll} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Check className="w-4 h-4 mr-2" />
+                    Accept All
+                  </Button>
+                  <Button onClick={rejectAll} variant="outline">
+                    Reject All
+                  </Button>
+                  <Button onClick={() => setShowSettings(true)} variant="outline">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Customize
+                  </Button>
+                </div>
+              </div>
+              
+              <Button
+                onClick={rejectAll}
+                variant="ghost"
+                size="icon"
+                className="flex-shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </Button>
             </div>
-            
-            <button
-              onClick={rejectAll}
-              className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex-shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </div>
 
       {/* Cookie Settings Modal */}
-      {showSettings && (
-        <div className="fixed inset-0 modal-backdrop z-60 flex items-center justify-center p-4">
-          <div className="glass-card rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Cookie Preferences
-              </h2>
-              <button
-                onClick={() => setShowSettings(false)}
-                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      <Dialog open={showSettings} onOpenChange={setShowSettings}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Cookie className="w-6 h-6 text-amber-600" />
+              Cookie Preferences
+            </DialogTitle>
+            <DialogDescription>
+              Manage your cookie preferences. You can enable or disable different types of cookies below.
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="space-y-6">
-              {/* Necessary Cookies */}
-              <div className="glass-card p-4 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="space-y-6 py-4">
+            {/* Necessary Cookies */}
+            <div className="space-y-3 p-4 border rounded-lg bg-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
                     Necessary Cookies
                   </h3>
-                  <div className="w-12 h-6 bg-green-500 rounded-full flex items-center px-1">
-                    <div className="w-4 h-4 bg-white rounded-full ml-auto" />
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    These cookies are essential for the website to function properly. They cannot be disabled.
+                  </p>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  These cookies are essential for the website to function properly. They cannot be disabled.
-                </p>
+                <Switch checked={preferences.necessary} disabled />
               </div>
+            </div>
 
-              {/* Analytics Cookies */}
-              <div className="glass-card p-4 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {/* Analytics Cookies */}
+            <div className="space-y-3 p-4 border rounded-lg bg-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
                     Analytics Cookies
                   </h3>
-                  <button
-                    onClick={() => setPreferences({...preferences, analytics: !preferences.analytics})}
-                    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${
-                      preferences.analytics ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`}
-                  >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                      preferences.analytics ? 'ml-auto' : ''
-                    }`} />
-                  </button>
+                  <p className="text-sm text-muted-foreground">
+                    Help us understand how visitors interact with our website to improve user experience.
+                  </p>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Help us understand how visitors interact with our website to improve user experience.
-                </p>
+                <Switch 
+                  checked={preferences.analytics} 
+                  onCheckedChange={() => togglePreference('analytics')}
+                />
               </div>
+            </div>
 
-              {/* Marketing Cookies */}
-              <div className="glass-card p-4 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {/* Marketing Cookies */}
+            <div className="space-y-3 p-4 border rounded-lg bg-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
                     Marketing Cookies
                   </h3>
-                  <button
-                    onClick={() => setPreferences({...preferences, marketing: !preferences.marketing})}
-                    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${
-                      preferences.marketing ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`}
-                  >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                      preferences.marketing ? 'ml-auto' : ''
-                    }`} />
-                  </button>
+                  <p className="text-sm text-muted-foreground">
+                    Used to deliver relevant advertisements and track ad campaign performance.
+                  </p>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Used to deliver relevant advertisements and track ad campaign performance.
-                </p>
+                <Switch 
+                  checked={preferences.marketing} 
+                  onCheckedChange={() => togglePreference('marketing')}
+                />
               </div>
+            </div>
 
-              {/* Preference Cookies */}
-              <div className="glass-card p-4 rounded-xl">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {/* Preference Cookies */}
+            <div className="space-y-3 p-4 border rounded-lg bg-card">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
                     Preference Cookies
                   </h3>
-                  <button
-                    onClick={() => setPreferences({...preferences, preferences: !preferences.preferences})}
-                    className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${
-                      preferences.preferences ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
-                    }`}
-                  >
-                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                      preferences.preferences ? 'ml-auto' : ''
-                    }`} />
-                  </button>
+                  <p className="text-sm text-muted-foreground">
+                    Remember your settings and preferences to provide a personalized experience.
+                  </p>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Remember your settings and preferences to provide a personalized experience.
-                </p>
+                <Switch 
+                  checked={preferences.preferences} 
+                  onCheckedChange={() => togglePreference('preferences')}
+                />
               </div>
             </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={acceptSelected}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
-              >
-                Save Preferences
-              </button>
-              <button
-                onClick={acceptAll}
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                Accept All
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+
+          <div className="flex gap-3 pt-4">
+            <Button onClick={acceptSelected} className="flex-1">
+              Save Preferences
+            </Button>
+            <Button onClick={acceptAll} variant="outline" className="flex-1">
+              Accept All
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
