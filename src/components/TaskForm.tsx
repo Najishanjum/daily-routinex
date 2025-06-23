@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Task, CATEGORIES } from '@/types/task';
+import { Task, CATEGORIES, PRIORITIES } from '@/types/task';
 import { PhotoUpload } from './PhotoUpload';
 
 interface TaskFormProps {
@@ -16,7 +16,8 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
     date: new Date().toISOString().split('T')[0],
     category: 'work',
     notes: '',
-    photos: [] as string[]
+    photos: [] as string[],
+    priority: 'not-urgent-important' as const
   });
 
   useEffect(() => {
@@ -27,7 +28,8 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
         date: task.date,
         category: task.category,
         notes: task.notes || '',
-        photos: task.photos || []
+        photos: task.photos || [],
+        priority: task.priority || 'not-urgent-important'
       });
     }
   }, [task]);
@@ -70,6 +72,26 @@ export function TaskForm({ task, onSave, onClose }: TaskFormProps) {
               className="w-full px-4 py-3 bg-white/50 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="Enter task title..."
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Priority
+            </label>
+            <select
+              value={formData.priority}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
+              className="w-full px-4 py-3 bg-white/50 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            >
+              {PRIORITIES.map((priority) => (
+                <option key={priority.id} value={priority.id}>
+                  {priority.icon} {priority.label}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {PRIORITIES.find(p => p.id === formData.priority)?.description}
+            </p>
           </div>
 
           <div>

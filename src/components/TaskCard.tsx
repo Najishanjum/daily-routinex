@@ -1,6 +1,6 @@
 
 import { Clock, Calendar, Camera } from 'lucide-react';
-import { Task, CATEGORIES } from '@/types/task';
+import { Task, CATEGORIES, PRIORITIES } from '@/types/task';
 import { Badge } from '@/components/ui/badge';
 
 interface TaskCardProps {
@@ -11,6 +11,7 @@ interface TaskCardProps {
 
 export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
   const category = CATEGORIES.find(c => c.id === task.category);
+  const priority = PRIORITIES.find(p => p.id === task.priority);
   
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -21,14 +22,39 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
     return `${mins}m`;
   };
 
+  const getPriorityBorderClass = () => {
+    if (!priority) return '';
+    switch (priority.id) {
+      case 'urgent-important':
+        return 'border-l-4 border-red-500';
+      case 'not-urgent-important':
+        return 'border-l-4 border-yellow-500';
+      case 'urgent-not-important':
+        return 'border-l-4 border-blue-500';
+      case 'low-priority':
+        return 'border-l-4 border-green-500';
+      default:
+        return '';
+    }
+  };
+
   return (
-    <div className="task-item glass-card rounded-2xl p-6 group">
+    <div className={`task-item glass-card rounded-2xl p-6 group ${getPriorityBorderClass()}`}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {task.title}
             </h3>
+            {priority && (
+              <Badge 
+                variant="outline" 
+                className={`priority-${priority.id} flex items-center gap-1 font-medium`}
+              >
+                <span className="text-sm">{priority.icon}</span>
+                {priority.label}
+              </Badge>
+            )}
             {category && (
               <Badge 
                 variant="outline" 
