@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from 'react';
-import { Edit3, Calendar, Target, Flame, Quote } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Edit3, Calendar, Target, Flame, Quote, Camera } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Task } from '@/types/task';
 import { Progress } from '@/components/ui/progress';
@@ -25,6 +25,7 @@ export function UserProfile({ tasks }: UserProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(userProfile);
   const [quoteOfDay, setQuoteOfDay] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Motivational quotes
   const quotes = [
@@ -89,6 +90,21 @@ export function UserProfile({ tasks }: UserProfileProps) {
     setIsEditing(false);
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditForm({ ...editForm, avatar: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -107,20 +123,44 @@ export function UserProfile({ tasks }: UserProfileProps) {
           <div className="relative group">
             <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1 shadow-2xl transition-transform duration-300 group-hover:scale-105">
               <div className="w-full h-full rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-2xl lg:text-3xl font-bold text-gray-700 dark:text-gray-200">
-                {userProfile.avatar ? (
+                {isEditing && editForm.avatar ? (
+                  <img 
+                    src={editForm.avatar} 
+                    alt="Profile" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : !isEditing && userProfile.avatar ? (
                   <img 
                     src={userProfile.avatar} 
                     alt="Profile" 
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  getInitials(userProfile.name)
+                  getInitials(isEditing ? editForm.name : userProfile.name)
                 )}
               </div>
             </div>
-            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
-              <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-            </div>
+            {isEditing && (
+              <button
+                onClick={triggerFileInput}
+                className="absolute -bottom-2 -right-2 w-10 h-10 bg-blue-600 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer shadow-lg"
+                title="Upload photo"
+              >
+                <Camera className="w-5 h-5 text-white" />
+              </button>
+            )}
+            {!isEditing && (
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
           </div>
 
           {/* Profile Info */}
