@@ -1,5 +1,6 @@
 
-import { Moon, Sun, Clock } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
+import routinexLogo from '@/assets/routinex-logo.jpg';
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -12,8 +13,8 @@ export function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
       <div className="container mx-auto px-4 py-4 max-w-6xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
-              <Clock className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
+              <img src={routinexLogo} alt="RoutineX Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">

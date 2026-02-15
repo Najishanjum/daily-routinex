@@ -124,7 +124,7 @@ export function Footer({ onTermsClick, onPrivacyClick }: FooterProps) {
         <div className="border-t border-white/20 dark:border-gray-700/20 mt-8 pt-6 text-center">
           <p className="text-gray-600 dark:text-gray-400 text-sm">
             © {currentYear} RoutineX. All rights reserved. Developed by{' '}
-            <span className="font-medium text-gray-900 dark:text-white">Najish Anjum</span>
+            <a href="https://najish-anjum-portfolio.vercel.app" target="_blank" rel="noopener noreferrer" className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors underline underline-offset-2">Najish Anjum</a>
           </p>
         </div>
       </div>
