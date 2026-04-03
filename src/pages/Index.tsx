@@ -520,6 +520,12 @@ const Index = () => {
         tasks={tasks}
       />
 
+      <SocialAccountability
+        tasks={tasks}
+        isOpen={showSocialAccountability}
+        onClose={() => setShowSocialAccountability(false)}
+      />
+
       <CookieConsent />
     </div>
   );
