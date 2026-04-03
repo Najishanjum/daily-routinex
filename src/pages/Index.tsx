@@ -63,6 +63,7 @@ const Index = () => {
   const [showMicroHabits, setShowMicroHabits] = useState(false);
   const [showDailySnapTracker, setShowDailySnapTracker] = useState(false);
   const [showAIChatCoach, setShowAIChatCoach] = useState(false);
+  const [showSocialAccountability, setShowSocialAccountability] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showPrintMyDay, setShowPrintMyDay] = useState(false);
   const [showProgressCertificate, setShowProgressCertificate] = useState(false);
