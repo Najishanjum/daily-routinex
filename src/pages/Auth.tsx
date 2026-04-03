@@ -22,7 +22,16 @@ export default function Auth() {
     try {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message === 'Invalid login credentials') {
+            toast.error('Invalid email or password. Please check your credentials or sign up first.');
+          } else if (error.message === 'Email not confirmed') {
+            toast.error('Please confirm your email first. Check your inbox for the verification link.');
+          } else {
+            toast.error(error.message);
+          }
+          return;
+        }
         toast.success('Welcome back! 🎉');
       } else {
         if (!fullName.trim()) {
@@ -30,7 +39,7 @@ export default function Auth() {
           setLoading(false);
           return;
         }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -39,7 +48,14 @@ export default function Auth() {
           },
         });
         if (error) throw error;
-        toast.success('Account created! Check your email to verify.');
+        
+        // Check if user was auto-confirmed (no email confirmation required)
+        if (data.session) {
+          toast.success('Account created! Welcome to RoutineX! 🎉');
+        } else {
+          toast.success('Account created! Check your email to verify, then sign in.');
+          setIsLogin(true);
+        }
       }
     } catch (error: any) {
       toast.error(error.message || 'Something went wrong');
