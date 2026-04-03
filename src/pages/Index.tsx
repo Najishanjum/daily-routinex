@@ -36,6 +36,7 @@ import { MiniCourses } from '@/components/MiniCourses';
 import { MicroHabits } from '@/components/MicroHabits';
 import { DailySnapTracker } from '@/components/DailySnapTracker';
 import { AIChatCoach } from '@/components/AIChatCoach';
+import { SocialAccountability } from '@/components/SocialAccountability';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
@@ -62,6 +63,7 @@ const Index = () => {
   const [showMicroHabits, setShowMicroHabits] = useState(false);
   const [showDailySnapTracker, setShowDailySnapTracker] = useState(false);
   const [showAIChatCoach, setShowAIChatCoach] = useState(false);
+  const [showSocialAccountability, setShowSocialAccountability] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [showPrintMyDay, setShowPrintMyDay] = useState(false);
   const [showProgressCertificate, setShowProgressCertificate] = useState(false);
@@ -266,6 +268,16 @@ const Index = () => {
                 }`}
               >
                 🎵 Focus Music
+              </button>
+              <button
+                onClick={() => setShowSocialAccountability(!showSocialAccountability)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showSocialAccountability
+                    ? 'bg-orange-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🤝 Social Mode
               </button>
               <button
                 onClick={() => setShowFriendMode(!showFriendMode)}
@@ -506,6 +518,12 @@ const Index = () => {
         isOpen={showAIChatCoach}
         onClose={() => setShowAIChatCoach(false)}
         tasks={tasks}
+      />
+
+      <SocialAccountability
+        tasks={tasks}
+        isOpen={showSocialAccountability}
+        onClose={() => setShowSocialAccountability(false)}
       />
 
       <CookieConsent />
