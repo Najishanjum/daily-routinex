@@ -372,6 +372,7 @@ const Index = () => {
               viewMode={viewMode}
               selectedDate={selectedDate}
             />
+            <TaskCalendar tasks={tasks} />
             <StreakRewards tasks={tasks} />
           </div>
         </div>
