@@ -36,6 +36,7 @@ import { MiniCourses } from '@/components/MiniCourses';
 import { MicroHabits } from '@/components/MicroHabits';
 import { DailySnapTracker } from '@/components/DailySnapTracker';
 import { AIChatCoach } from '@/components/AIChatCoach';
+import { SocialAccountability } from '@/components/SocialAccountability';
 
 const Index = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
