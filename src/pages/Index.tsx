@@ -270,6 +270,16 @@ const Index = () => {
                 🎵 Focus Music
               </button>
               <button
+                onClick={() => setShowSocialAccountability(!showSocialAccountability)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showSocialAccountability
+                    ? 'bg-orange-600 text-white'
+                    : 'bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70'
+                }`}
+              >
+                🤝 Social Mode
+              </button>
+              <button
                 onClick={() => setShowFriendMode(!showFriendMode)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   showFriendMode
