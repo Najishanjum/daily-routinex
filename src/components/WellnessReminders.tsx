@@ -58,7 +58,7 @@ export function WellnessReminders({ isOpen, onClose }: WellnessRemindersProps) {
 
   useEffect(() => {
     // Set up intervals for enabled reminders
-    const intervals: { [key: string]: NodeJS.Timeout } = {};
+    const intervals: { [key: string]: ReturnType<typeof setInterval> } = {};
 
     reminders.forEach(reminder => {
       if (reminder.enabled) {
