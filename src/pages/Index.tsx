@@ -35,9 +35,11 @@ import { MiniCourses } from '@/components/MiniCourses';
 import { MicroHabits } from '@/components/MicroHabits';
 import { DailySnapTracker } from '@/components/DailySnapTracker';
 import { AIChatCoach } from '@/components/AIChatCoach';
+import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
-  const [tasks, setTasks] = useLocalStorage<Task[]>('routine-tasks', []);
+  const { user } = useAuth();
+  const [tasks, setTasks] = useLocalStorage<Task[]>(`routine-tasks-${user?.id ?? 'guest'}`, []);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('daily');
