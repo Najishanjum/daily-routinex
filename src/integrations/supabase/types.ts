@@ -121,6 +121,36 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_progress: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          streak_count: number
+          tasks_completed: number
+          tasks_total: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          streak_count?: number
+          tasks_completed?: number
+          tasks_total?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          streak_count?: number
+          tasks_completed?: number
+          tasks_total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       donors: {
         Row: {
           age: number
@@ -220,6 +250,33 @@ export type Database = {
           updated_at?: string | null
           urgency_level?: number | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      friend_connections: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -346,6 +403,57 @@ export type Database = {
           state?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      punishment_rules: {
+        Row: {
+          action_text: string
+          created_at: string
+          id: string
+          is_active: boolean
+          trigger_text: string
+          user_id: string
+        }
+        Insert: {
+          action_text: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          trigger_text: string
+          user_id: string
+        }
+        Update: {
+          action_text?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          trigger_text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shared_goals: {
+        Row: {
+          created_at: string
+          goal_text: string
+          id: string
+          is_completed: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_text: string
+          id?: string
+          is_completed?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_text?: string
+          id?: string
+          is_completed?: boolean
+          user_id?: string
         }
         Relationships: []
       }
