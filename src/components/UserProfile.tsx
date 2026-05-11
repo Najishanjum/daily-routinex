@@ -4,6 +4,7 @@ import { Edit3, Calendar, Target, Flame, Quote, Camera } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Task } from '@/types/task';
 import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UserProfileData {
   name: string;
