@@ -4,6 +4,7 @@ import { Edit3, Calendar, Target, Flame, Quote, Camera } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Task } from '@/types/task';
 import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UserProfileData {
   name: string;
@@ -16,11 +17,21 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ tasks }: UserProfileProps) {
-  const [userProfile, setUserProfile] = useLocalStorage<UserProfileData>('routine-user-profile', {
-    name: 'Welcome to RoutineX',
+  const { user } = useAuth();
+  const authName = (user?.user_metadata?.full_name as string) || (user?.email ? user.email.split('@')[0] : '');
+  const [userProfile, setUserProfile] = useLocalStorage<UserProfileData>(`routine-user-profile-${user?.id ?? 'guest'}`, {
+    name: authName || 'Welcome to RoutineX',
     bio: 'Your journey to better productivity starts here!',
     avatar: ''
   });
+
+  // Sync auth name into profile if profile name is empty or default placeholder
+  useEffect(() => {
+    if (authName && (!userProfile.name || userProfile.name === 'Welcome to RoutineX')) {
+      setUserProfile({ ...userProfile, name: authName });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authName]);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState(userProfile);
