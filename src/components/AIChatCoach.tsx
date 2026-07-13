@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Brain, Send, X, MessageCircle, Loader2, Star, Heart, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 interface Message {
@@ -49,10 +50,11 @@ interface AIChatCoachProps {
 }
 
 export function AIChatCoach({ isOpen, onClose, tasks }: AIChatCoachProps) {
+  const { user } = useAuth();
+  const userId = user?.id ?? '';
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [userId] = useState(() => 'user_' + Date.now());
   const [userMemory, setUserMemory] = useState<UserMemory | null>(null);
   const [showMemoryInsights, setShowMemoryInsights] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -76,6 +78,7 @@ export function AIChatCoach({ isOpen, onClose, tasks }: AIChatCoachProps) {
   }, [isOpen]);
 
   const loadUserMemory = async () => {
+    if (!userId) return;
     try {
       const { data, error } = await supabase
         .from('user_ai_memory')
