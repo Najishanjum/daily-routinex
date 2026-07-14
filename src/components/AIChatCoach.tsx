@@ -310,12 +310,19 @@ export function AIChatCoach({ isOpen, onClose, tasks }: AIChatCoachProps) {
   };
 
   const quickPrompts = [
-    "I feel demotivated today. What should I do?",
-    "Give me a smarter morning routine",
-    "How can I be more productive?",
-    "I'm struggling with consistency",
-    "What habits should I focus on?",
-    "Remember my preferences for next time"
+    "I feel demotivated today — help me restart 💪",
+    "Plan my ideal morning routine",
+    "I keep procrastinating — what should I do right now?",
+    "How do I build a 30-day streak?",
+    "Help me prioritize using the Eisenhower Matrix",
+    "I'm overwhelmed with my task list — where do I start?",
+    "Give me a 25-minute focus plan (Pomodoro)",
+    "How can I stop scrolling my phone at night?",
+    "Design an evening wind-down routine",
+    "I'm tired after work — how do I still stick to my habits?",
+    "Suggest micro-habits I can start today",
+    "How do I stay consistent on weekends?",
+    "Remember my goals for next time",
   ];
 
   const handleQuickPrompt = (prompt: string) => {
