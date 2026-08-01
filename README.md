@@ -1,6 +1,6 @@
 # Welcome to your RoutineX project
 
-
+Productivity & routine management system helping users build daily habits, track tasks, and optimize routines.
 Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
