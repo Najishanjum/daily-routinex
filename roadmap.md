@@ -1,0 +1,2 @@
+- [x] Replace the default favicon with the supplied RoutineX icon.
+- [x] Add a downloadable backup of RoutineX data stored on this device.
