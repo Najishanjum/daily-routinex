@@ -36,6 +36,9 @@ import { MicroHabits } from '@/components/MicroHabits';
 import { DailySnapTracker } from '@/components/DailySnapTracker';
 import { AIChatCoach } from '@/components/AIChatCoach';
 import { useAuth } from '@/hooks/useAuth';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { downloadRoutineBackup } from '@/lib/downloadRoutineBackup';
 
 const Index = () => {
   const { user } = useAuth();
@@ -169,6 +172,15 @@ const Index = () => {
     setMusicPlaying(!musicPlaying);
   };
 
+  const handleBackup = () => {
+    try {
+      downloadRoutineBackup();
+      toast.success('RoutineX backup downloaded');
+    } catch {
+      toast.error('Could not download your backup. Please try again.');
+    }
+  };
+
   const handleGoalTasksGenerated = (generatedTasks: Omit<Task, 'id'>[]) => {
     const newTasks = generatedTasks.map(task => ({
       ...task,
@@ -188,6 +200,10 @@ const Index = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Profile Toggle */}
             <div className="flex justify-end gap-2 flex-wrap">
+              <Button type="button" variant="outline" onClick={handleBackup} className="bg-background/60 text-foreground border-border" title="Download your RoutineX data as a backup">
+                <Download aria-hidden="true" />
+                Back up data
+              </Button>
               <button
                 onClick={() => setShowAIChatCoach(!showAIChatCoach)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
